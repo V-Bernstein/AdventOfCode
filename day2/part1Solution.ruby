@@ -21,10 +21,6 @@ class Position
     end
 
     def initialize_copy(other_obj)
-        #new = initialize
-        #new.setDepth = @depth
-        #new.setHorizPosition = @horizPosition 
-        #new
 	super
     end
 
