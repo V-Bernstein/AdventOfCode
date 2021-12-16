@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayDeque;
 
-public class Part1Solution {
+public class Part2Solution {
     private final static String FILE_NAME = "input.txt";
 
     public static void main(String[] args) {
@@ -19,12 +19,13 @@ public class Part1Solution {
         List<Character> openers = getOpenersList();
         List<Character> closers = getClosersList();
         Map<Character, Character> openCloseMap = getOpenCloseMap();
-        Map<Character, Integer> pointsMap = getPointsMap();
+        ArrayList<Long> sortedScores = new ArrayList<>();
 
-        int solution = 0;
-        for (String s : inputs) {
+        for (int idx = 0; idx < inputs.size(); idx++) {
+            String s = inputs.get(idx);
             ArrayDeque<Character> openerStack = new ArrayDeque<>();
             ArrayDeque<Character> closerStack = new ArrayDeque<>();
+            boolean isCorrupt = false;
             for (int i = 0; i < s.length(); i++) {
                 Character curChar = s.charAt(i);
                 if (openers.contains(curChar)) {
@@ -33,17 +34,42 @@ public class Part1Solution {
                 
                 if (closers.contains(curChar)) {
                     Character matchingOpener = openerStack.pop();
-                    if (openCloseMap.get(matchingOpener) != curChar) {
-                       solution += pointsMap.get(curChar); 
+                    if (openCloseMap.get(matchingOpener) != curChar) { // Corrupted line
+                       isCorrupt = true;
                        break; 
                     }
                 }
             }
+            if (!isCorrupt) {
+                Long lineScore = calcLineScore(openerStack);
+                addToScores(sortedScores, lineScore);
+            }
         }
 
-
-        System.out.println("Solution is: " + solution);
+        int middle = sortedScores.size() / 2;
+        System.out.println("Solution is: " + sortedScores.get(middle));
     }
+
+  private static Long calcLineScore(ArrayDeque<Character> stack) {
+        Long retVal = 0L;
+        Map<Character, Integer> pointsMap = getPointsMap();
+        while(!stack.isEmpty()) {
+            Character c = stack.pop();
+            retVal *= 5L;
+            retVal += pointsMap.get(c);
+        }
+        return retVal;
+  }
+
+   private static void addToScores(List<Long> scores, Long scoreToAdd) {
+       for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) > scoreToAdd) {
+                scores.add(i, scoreToAdd);
+                return;
+            }
+       }
+       scores.add(scoreToAdd);
+   } 
 
    private static List<String> parseInput(String fileName) {
         List<String> retList = new ArrayList<>();
@@ -89,10 +115,10 @@ public class Part1Solution {
 
     private static Map<Character, Integer> getPointsMap() {
         Map<Character, Integer> retMap = new HashMap<>();
-        retMap.put(')', 3);
-        retMap.put('}', 1197);
-        retMap.put(']', 57);
-        retMap.put('>', 25137);
+        retMap.put('(', 1);
+        retMap.put('[', 2);
+        retMap.put('{', 3);
+        retMap.put('<', 4);
         return retMap;
     }
 }
