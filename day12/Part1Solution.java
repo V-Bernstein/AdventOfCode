@@ -110,54 +110,53 @@ public class Part1Solution {
 	    }
 
         caves.print();
-        List<String> paths = findPaths(caves);
-        System.out.println(paths);
-        System.out.println("Solution is: " + paths.size());
+        //List<String> paths = findPaths(caves);
+        int paths = findPaths(caves);
+        System.out.println("Solution is: " + paths);
     }
 
-    private static List<String> findPaths(Graph caves) {
+    //private static List<String> findPaths(Graph caves) {
+    private static int findPaths(Graph caves) {
         Node startNode = caves.getStartNode();
         if (startNode == null) {
             System.out.println("No start node!");
-            return null;
+            return -1;
         }
-        List<String> paths = new ArrayList<>();
         Set<String> visited = new HashSet<>();
+        /*List<String> paths = new ArrayList<>();
         List<String> path = new ArrayList<>();
-        findPathsHelper(caves, paths, visited, startNode, path);
+        findPathsHelper(caves, paths, visited, startNode, path);*/
+        int paths = findPathsHelper(caves, visited, startNode);
         return paths;
     }
 
     // return string which records path?
-    private static void findPathsHelper(Graph caves, List<String> paths, Set<String> visited, Node curNode, List<String> path) {
+    //private static void findPathsHelper(Graph caves, List<String> paths, Set<String> visited, Node curNode, List<String> path) {
+    private static int findPathsHelper(Graph caves, Set<String> visited, Node curNode) {
         if (curNode == null) {
-            return;
+            return 0;
         }
 
         if (curNode.isEnd()) {
-            path.add("end");
-            paths.add(prettifyPath(path));
-            path.clear();
-            return;
+            return 1;
         }
 
         if (curNode.isSmall() && visited.contains(curNode.getValue())) {
             System.out.println("is small and visited");
-            path.clear();
-            return;
+            return 0;
         }
 
         visited.add(curNode.getValue());
-        path.add(curNode.getValue());
 
-        System.out.println("path: " + curNode.getValue());
-
+        int paths = 0;
         for (Node cave : curNode.getEdges()) {
             if (cave.isStart()) { // Don't go back to start
                 continue;
             }
-            findPathsHelper(caves, paths, visited, cave, path);
+            //findPathsHelper(caves, paths, visited, cave, path);
+            paths += findPathsHelper(caves, visited, cave);
         }
+        return paths;
     }
 
     private static String prettifyPath(List<String> path) {
